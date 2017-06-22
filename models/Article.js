@@ -20,7 +20,7 @@ var ArticleSchema = new Schema({
   },
   date: {
     type: Date
-  }, 
+  },
   url: {
     type: String,
     unique: true,

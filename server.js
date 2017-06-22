@@ -70,7 +70,13 @@ app.get('/api/query', function(req, res) {
 })
 // GET: for querying mongodb
 app.get('/api/saved', function(req, res) {
-  // TODO
+  Article.find({}, function(error,doc) {
+    if(error) {
+      res.send(error);
+    } else {
+      res.send(doc);
+    }
+  });
 });
 
 // POST: for saving an article
@@ -94,3 +100,4 @@ app.listen(PORT, function() {
 
 // TODO
 // remove API key from NYT query 
+// don't add duplicates to db
