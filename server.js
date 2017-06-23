@@ -33,80 +33,10 @@ db.once('open', function() {
 });
 
 // routes
-// POST: NYT API query using request
-app.post('/api/query', function(req, res) {
-  // clear out unsaved articles from last search 
-  Article.remove({'saved':false}, function(error, doc) {
-    if(error) {
-      console.log(error);
-    } else {
-      // 
-    }
-  })
-
-  var apiKey = 'b0a8918d8a0742a5882fc8da181a0921';
-  var queryTerm = req.body.queryTerm;
-  // searches for YYYYMMDD
-  if(req.body.beginYear) {
-    var beginDate = '&begin_date=' + req.body.beginYear + '0101';
-  } else {
-    var beginDate = ''
-  }
-  if(req.body.endYear) {
-    var endDate = '&end_date=' + req.body.endYear + '1231';
-  } else {
-    endDate = ''
-  }
-  var searchUrl = 'https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=' + apiKey + '&q=' + queryTerm + beginDate + endDate;
-  request(searchUrl, function(error, response, body) {
-    if(error) {
-      console.log(error);
-    } else {
-      var results = JSON.parse(body).response.docs;
-      var articles = [];
-      // go through results and pull out relevant info
-      for(var i = 0; i < results.length; i++) {
-        var date = results[i].pub_date;
-        var moment_date = moment(date).format('MMMM Do YYYY, h:mm a'); 
-        var article = {
-          title: results[i].headline.main,
-          news_desk: results[i].news_desk,
-          author: results[i].byline.original,
-          date: moment_date,
-          url: results[i].web_url,
-          snippet: results[i].snippet
-        }
-        articles.push(article);
-        // add to database as unsaved article
-        var newArticle = new Article(article);
-        newArticle.save(function(err, doc) {
-          if(err) {
-            res.send(err);
-          } else {
-            console.log('new article added to db!');
-          }
-        });
-      }
-      // res.send(articles);
-      res.redirect('/');
-    }
-  });
-});
-
-// GET: for querying unsaved articles
-app.get('/api/query', function(req, res) {
-  Article.find({'saved':false}, function(error, doc) {
-    if(error) {
-      res.send(error);
-    } else {
-      res.send(doc);
-    }
-  })
-})
 
 // GET: for querying mongodb
 app.get('/api/saved', function(req, res) {
-  Article.find({'saved':true}, function(error,doc) {
+  Article.find({}, function(error,doc) {
     if(error) {
       res.send(error);
     } else {
@@ -115,18 +45,25 @@ app.get('/api/saved', function(req, res) {
   });
 });
 
-// PUT: for saving an article
-app.put('/api/saved', function(req, res) {
-  var articleId = req.body.articleId;
-  console.log(articleId);
-  
-  Article.findOneAndUpdate({'_id': articleId}, {'saved':true}, function(error, doc) {
-    if(error) {
-      res.send(error);
+// POST: for saving an article
+app.post('/api/saved', function(req, res) {
+  var article = {
+    title: req.body.title,
+    author: req.body.author,
+    url: req.body.url,
+    date: req.body.date,
+    snippet: req.body.snippet,
+    news_desk: req.body.news_desk
+  }
+  var newArticle = new Article(article);
+  newArticle.save(function(err, doc) {
+    if(err) {
+      res.send(err);
     } else {
+      console.log('new article added to db!');
       res.redirect('/search#/Saved');
     }
-  })
+  });
 }); 
 
 // DELETE: delete a saved article

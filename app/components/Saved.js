@@ -1,5 +1,5 @@
 var React = require('react');
-var helpers = require('../config/helpers');
+var helpers = require('../utils/helpers');
 
 var Link = require('react-router').Link;
 
