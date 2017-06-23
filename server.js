@@ -9,7 +9,7 @@ var methodOverride = require('method-override');
 var Article = require('./models/Article.js');
 
 var app = express();
-var PORT = process.env.PORT || 3000;
+var PORT = process.env.PORT || 5000;
 
 // Morgan for logging 
 app.use(logger('dev'));
@@ -22,7 +22,8 @@ app.use(methodOverride("_method"));
 app.use(express.static('./public'));
 
 // mongoose setup
-mongoose.connect('mongodb://localhost/nytreact');
+// mongoose.connect('mongodb://localhost/nytreact');
+mongoose.connect('mongodb://heroku_21c08cb1:qf9ttk04ngegrq1emg333ne35s@ds135522.mlab.com:35522/heroku_21c08cb1'); //mongolab heroku addon 
 var db = mongoose.connection;
 db.on('error', function(err) {
   console.log('mongoose error: ', err);
