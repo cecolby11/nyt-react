@@ -24,7 +24,7 @@ var ArticleSchema = new Schema({
     required: false
   },
   date: {
-    type: Date
+    type: String // moment-formatted into string
   },
   url: {
     type: String,

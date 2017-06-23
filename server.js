@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 var logger = require('morgan');
 var request = require('request');
 var methodOverride = require('method-override');
+var moment = require('moment');
 
 var Article = require('./models/Article.js');
 
@@ -65,11 +66,14 @@ app.post('/api/query', function(req, res) {
       var articles = [];
       // go through results and pull out relevant info
       for(var i = 0; i < results.length; i++) {
+        var date = results[i].pub_date;
+        var moment_date = moment(date).format('MMMM Do YYYY, h:mm a'); 
+        console.log(moment_date);
         var article = {
           title: results[i].headline.main,
           news_desk: results[i].news_desk,
           author: results[i].byline.original,
-          date: results[i].pub_date,
+          date: moment_date,
           url: results[i].web_url,
           snippet: results[i].snippet
         }
