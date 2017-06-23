@@ -6,7 +6,7 @@ var Main = React.createClass({
   render: function() {
     return(
       <div className="container main">
-        <h1>New York Times Reader</h1>
+        <h1>NYT React Reader</h1>
         <Link to='/Search'><button className="btn btn-default">Search</button></Link>
         <Link to='/Saved'><button className="btn btn-default">Saved</button></Link>
         <div>

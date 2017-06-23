@@ -5,7 +5,6 @@ var ArticleSchema = new Schema({
   title: {
     type: String,
     trim: true,
-    unique: true,
     required: true, 
   }, 
   author: {
@@ -28,7 +27,6 @@ var ArticleSchema = new Schema({
   },
   url: {
     type: String,
-    unique: true,
     trim: true,
     required: true,
   },

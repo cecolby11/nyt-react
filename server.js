@@ -68,7 +68,6 @@ app.post('/api/query', function(req, res) {
       for(var i = 0; i < results.length; i++) {
         var date = results[i].pub_date;
         var moment_date = moment(date).format('MMMM Do YYYY, h:mm a'); 
-        console.log(moment_date);
         var article = {
           title: results[i].headline.main,
           news_desk: results[i].news_desk,
