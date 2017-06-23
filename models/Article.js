@@ -13,6 +13,11 @@ var ArticleSchema = new Schema({
     trim: true,
     required: false
   },
+  news_desk: {
+    type: String,
+    trim: true,
+    required: false
+  },
   snippet: {
     type: String,
     trim: true,

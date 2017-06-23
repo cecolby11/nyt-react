@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var logger = require('morgan');
 var request = require('request');
+var methodOverride = require('method-override');
 
 var Article = require('./models/Article.js');
 
@@ -16,7 +17,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.text());
 app.use(bodyParser.json({type: "application/vnd.api+json"}));
-
+app.use(methodOverride("_method"));
 // serve static files from public directory
 app.use(express.static('./public'));
 
@@ -46,9 +47,11 @@ app.get('/api/query', function(req, res) {
       var articles = [];
       // go through results and pull out relevant info
       for(var i = 0; i < results.length; i++) {
+        console.log(results[i]);
         var article = {
           title: results[i].headline.main,
-          author: results[i].news_desk,
+          news_desk: results[i].news_desk,
+          author: results[i].byline.original,
           date: results[i].pub_date,
           url: results[i].web_url,
           snippet: results[i].snippet
@@ -85,8 +88,17 @@ app.post('/api/saved', function(req, res) {
 }); 
 
 // DELETE: delete a saved article
-app.delete('/api/saved', function(req, res) {
-  // TODO
+app.delete('/api/saved/', function(req, res) {
+  console.log('DELETE!');
+  var articleId = req.body.articleId;
+  console.log(articleId);
+  Article.findByIdAndRemove(articleId, function(error, doc) {
+    if(error) {
+      res.send(error);
+    } else {
+      res.redirect('/saved#/Saved')
+    }
+  });
 });
 
 // GET: main route, redirects to rendered react application
