@@ -32,13 +32,31 @@ db.once('open', function() {
 });
 
 // routes
-app.get('/api/query', function(req, res) {
+// POST: NYT API query using request
+app.post('/api/query', function(req, res) {
+  // clear out unsaved articles from last search 
+  Article.remove({'saved':false}, function(error, doc) {
+    if(error) {
+      console.log(error);
+    } else {
+      // 
+    }
+  })
+
   var apiKey = 'b0a8918d8a0742a5882fc8da181a0921';
-  var queryTerm = 'trump';
+  var queryTerm = req.body.queryTerm;
   // searches for YYYYMMDD
-  var beginDate = 2016 + '0101';
-  var endDate = 2017 + '1231';
-  var searchUrl = 'https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=' + apiKey + '&q=' + queryTerm + '&begin_date=' + beginDate + '&end_date=' + endDate;
+  if(req.body.beginYear) {
+    var beginDate = '&begin_date=' + req.body.beginYear + '0101';
+  } else {
+    var beginDate = ''
+  }
+  if(req.body.endYear) {
+    var endDate = '&end_date=' + req.body.endYear + '1231';
+  } else {
+    endDate = ''
+  }
+  var searchUrl = 'https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=' + apiKey + '&q=' + queryTerm + beginDate + endDate;
   request(searchUrl, function(error, response, body) {
     if(error) {
       console.log(error);
@@ -47,7 +65,6 @@ app.get('/api/query', function(req, res) {
       var articles = [];
       // go through results and pull out relevant info
       for(var i = 0; i < results.length; i++) {
-        console.log(results[i]);
         var article = {
           title: results[i].headline.main,
           news_desk: results[i].news_desk,
@@ -57,7 +74,7 @@ app.get('/api/query', function(req, res) {
           snippet: results[i].snippet
         }
         articles.push(article);
-        // add to database
+        // add to database as unsaved article
         var newArticle = new Article(article);
         newArticle.save(function(err, doc) {
           if(err) {
@@ -67,13 +84,26 @@ app.get('/api/query', function(req, res) {
           }
         });
       }
-      res.send(articles);
+      // res.send(articles);
+      res.redirect('/');
+    }
+  });
+});
+
+// GET: for querying unsaved articles
+app.get('/api/query', function(req, res) {
+  Article.find({'saved':false}, function(error, doc) {
+    if(error) {
+      res.send(error);
+    } else {
+      res.send(doc);
     }
   })
 })
+
 // GET: for querying mongodb
 app.get('/api/saved', function(req, res) {
-  Article.find({}, function(error,doc) {
+  Article.find({'saved':true}, function(error,doc) {
     if(error) {
       res.send(error);
     } else {
@@ -82,16 +112,23 @@ app.get('/api/saved', function(req, res) {
   });
 });
 
-// POST: for saving an article
-app.post('/api/saved', function(req, res) {
-  // TODO
+// PUT: for saving an article
+app.put('/api/saved', function(req, res) {
+  var articleId = req.body.articleId;
+  console.log(articleId);
+  
+  Article.findOneAndUpdate({'_id': articleId}, {'saved':true}, function(error, doc) {
+    if(error) {
+      res.send(error);
+    } else {
+      res.redirect('/search#/Saved');
+    }
+  })
 }); 
 
 // DELETE: delete a saved article
 app.delete('/api/saved/', function(req, res) {
-  console.log('DELETE!');
   var articleId = req.body.articleId;
-  console.log(articleId);
   Article.findByIdAndRemove(articleId, function(error, doc) {
     if(error) {
       res.send(error);
@@ -113,3 +150,5 @@ app.listen(PORT, function() {
 // TODO
 // remove API key from NYT query 
 // don't add duplicates to db
+// make sure years are optional in queryURL
+// validation for years in search

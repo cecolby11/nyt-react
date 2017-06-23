@@ -31,6 +31,10 @@ var ArticleSchema = new Schema({
     unique: true,
     trim: true,
     required: true,
+  },
+  saved: {
+    type: Boolean,
+    default: false
   }
 });
 

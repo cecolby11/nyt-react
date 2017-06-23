@@ -11,15 +11,15 @@ var Saved = React.createClass({
   // displaly Articles on load (helper grabs from /api/saved using axios)
   componentDidMount: function() {
     var that = this;
-    helpers.getArticles().then(function(articles) {
-      that.setState({Articles: articles})
+    helpers.getSaved().then(function(articles) {
+      that.setState({Articles: articles});
     });
   }, 
 
   render: function() {
     return(
       <div>
-        <h3>Saved!</h3>
+        <h3>Saved Articles</h3>
         <ul>{this.state.Articles.map(function(article) {
           return <li className="thumbnail" key={article._id}>
           <h4>{article.title} | <span className="article-author">{article.author}</span></h4>

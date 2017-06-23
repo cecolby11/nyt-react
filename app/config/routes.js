@@ -23,7 +23,7 @@ module.exports = (
     <Route path = '/' component = {Main}>
       <Route path = '/Search' component = {Search}>
         <Route path = '/Results' component = {Results}/>
-        <IndexRoute component = {Results}/>
+        <IndexRoute component={Results}/>
       </Route>
       <Route path = '/Saved' component = {Saved}/>
     </Route>
