@@ -5,7 +5,6 @@ var bodyParser = require('body-parser');
 var logger = require('morgan');
 var request = require('request');
 var methodOverride = require('method-override');
-var moment = require('moment');
 
 var Article = require('./models/Article.js');
 
@@ -86,9 +85,3 @@ app.get('*', function(req, res) {
 app.listen(PORT, function() {
   console.log('App listening');
 });
-
-// TODO
-// remove API key from NYT query 
-// don't add duplicates to db
-// make sure years are optional in queryURL
-// validation for years in search
